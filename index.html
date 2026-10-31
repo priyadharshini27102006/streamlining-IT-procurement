@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Laptop Procurement</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #00000015;
+        }
+
+        h1 {
+            text-align: center;
+            color: #174477;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 11px;
+            margin-top: 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            padding: 11px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 18px;
+            color: white;
+            background: #1769aa;
+            font-size: 15px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .approve {
+            background: #16803c;
+            margin-right: 8px;
+        }
+
+        .reject {
+            background: #c62828;
+        }
+
+        .request {
+            background: #f8fafc;
+            border: 1px solid #dbe3ed;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+
+        .status {
+            font-weight: bold;
+            color: #174477;
+        }
+
+        .message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .section-title {
+            margin-top: 30px;
+            border-bottom: 2px solid #dbeafe;
+            padding-bottom: 8px;
+        }
+
+        .small {
+            color: #64748b;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>IT Laptop Procurement</h1>
+    <p class="subtitle">
+        Standard Laptop Order Automation
+    </p>
+
+    <h2>Submit Laptop Request</h2>
+
+    <form id="requestForm">
+
+        <label for="employee">Employee Name</label>
+        <input id="employee" type="text"
+               placeholder="Enter employee name" required>
+
+        <label for="department">Department</label>
+        <select id="department" required>
+            <option value="">Select department</option>
+            <option>IT</option>
+            <option>HR</option>
+            <option>Finance</option>
+            <option>Marketing</option>
+            <option>Operations</option>
+        </select>
+
+        <label for="laptop">Laptop Type</label>
+        <select id="laptop" required>
+            <option value="">Select laptop</option>
+            <option>Standard Laptop</option>
+            <option>Developer Laptop</option>
+            <option>High Performance Laptop</option>
+        </select>
+
+        <label for="reason">Business Justification</label>
+        <textarea id="reason" rows="3"
+                  placeholder="Explain why the laptop is required"
+                  required></textarea>
+
+        <button type="submit">Submit Request</button>
+    </form>
+
+    <p id="message" class="message"></p>
+
+    <h2 class="section-title">Request Dashboard</h2>
+    <p class="small">
+        Demonstration only: approvals are simulated in this browser.
+    </p>
+
+    <div id="requestList">
+        <p>No requests submitted yet.</p>
+    </div>
+
+</div>
+
+<script>
+    const form = document.getElementById("requestForm");
+    const requestList = document.getElementById("requestList");
+    const message = document.getElementById("message");
+
+    let requests = [];
+    let nextId = 1;
+
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const employee =
+            document.getElementById("employee").value.trim();
+
+        const department =
+            document.getElementById("department").value;
+
+        const laptop =
+            document.getElementById("laptop").value;
+
+        const reason =
+            document.getElementById("reason").value.trim();
+
+        if (!employee || !department || !laptop || !reason) {
+            message.textContent =
+                "Please complete all required fields.";
+            return;
+        }
+
+        const request = {
+            id: nextId++,
+            employee: employee,
+            department: department,
+            laptop: laptop,
+            reason: reason,
+            status: "Pending Approval"
+        };
+
+        requests.push(request);
+
+        message.textContent =
+            "Request submitted successfully. Request ID: " +
+            request.id;
+
+        form.reset();
+        renderRequests();
+    });
+
+    function updateStatus(id, newStatus) {
+        const request = requests.find(item => item.id === id);
+
+        if (!request) return;
+
+        request.status = newStatus;
+
+        if (newStatus === "Approved") {
+            alert(
+                "Request approved. Procurement task is ready " +
+                "for the IT team to process."
+            );
+        } else if (newStatus === "Rejected") {
+            alert(
+                "Request rejected. The requester should be notified."
+            );
+        } else if (newStatus === "Completed") {
+            alert(
+                "Laptop request marked as completed."
+            );
+        }
+
+        renderRequests();
+    }
+
+    function renderRequests() {
+        requestList.innerHTML = "";
+
+        if (requests.length === 0) {
+            requestList.innerHTML =
+                "<p>No requests submitted yet.</p>";
+            return;
+        }
+
+        requests.forEach(function(request) {
+            const card = document.createElement("div");
+            card.className = "request";
+
+            const title = document.createElement("h3");
+            title.textContent =
+                "Request #" + request.id + " - " + request.employee;
+
+            const details = document.createElement("p");
+            details.textContent =
+                "Department: " + request.department;
+
+            const laptop = document.createElement("p");
+            laptop.textContent = "Laptop: " + request.laptop;
+
+            const reason = document.createElement("p");
+            reason.textContent =
+                "Justification: " + request.reason;
+
+            const status = document.createElement("p");
+            status.className = "status";
+            status.textContent = "Status: " + request.status;
+
+            card.append(title, details, laptop, reason, status);
+
+            if (request.status === "Pending Approval") {
+                addButton(card, "Approve", "approve", request.id);
+                addButton(card, "Reject", "reject", request.id);
+            }
+
+            if (request.status === "Approved") {
+                addButton(
+                    card, "Mark as Completed", "complete", request.id
+                );
+            }
+
+            requestList.appendChild(card);
+        });
+    }
+
+    function addButton(card, label, action, id) {
+        const button = document.createElement("button");
+        button.textContent = label;
+
+        if (action === "approve") {
+            button.className = "approve";
+            button.onclick = () => updateStatus(id, "Approved");
+        } else if (action === "reject") {
+            button.className = "reject";
+            button.onclick = () => updateStatus(id, "Rejected");
+        } else {
+            button.onclick = () => updateStatus(id, "Completed");
+        }
+
+        card.appendChild(button);
+    }
+</script>
+
+</body>
+</html>
